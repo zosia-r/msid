@@ -2,7 +2,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-def save_boxplots_numerical_by_categorial(df, output_folder='boxplots'):
+def save_boxplots_numerical_by_categorial(df, output_folder='results/plots/boxplots'):
     '''This function creates boxplots of numerical columns by categorical columns 
     in the input DataFrame and saves them to the output folder.'''
 
@@ -28,7 +28,7 @@ def save_boxplots_numerical_by_categorial(df, output_folder='boxplots'):
 
 
 
-def save_boxplots_categorial_by_categorial(df, output_folder='boxplots'):
+def save_boxplots_categorial_by_categorial(df, output_folder='results/plots/boxplots'):
     '''This function creates boxplots of categorical columns by categorical columns 
     in the input DataFrame and saves them to the output folder.'''
 
@@ -54,7 +54,7 @@ def save_boxplots_categorial_by_categorial(df, output_folder='boxplots'):
 
 
 
-def save_violinplots_numerical_by_categorial(df, output_folder='violinplots'):
+def save_violinplots_numerical_by_categorial(df, output_folder='results/plots/violinplots'):
     '''This function creates violin plots of numerical columns by categorical columns 
     in the input DataFrame and saves them to the output folder.'''
 
@@ -79,7 +79,7 @@ def save_violinplots_numerical_by_categorial(df, output_folder='violinplots'):
     print(f"All violin plots have been saved to the '{output_folder}' folder.")
 
 
-def save_violinplots_categorial_by_categorial(df, output_folder='violinplots'):
+def save_violinplots_categorial_by_categorial(df, output_folder='results/plots/violinplots'):
     '''This function creates violin plots of categorical columns by categorical columns 
     in the input DataFrame and saves them to the output folder.'''
 
@@ -102,3 +102,28 @@ def save_violinplots_categorial_by_categorial(df, output_folder='violinplots'):
                 plt.close()
     
     print(f"All violin plots have been saved to the '{output_folder}' folder.")
+
+
+
+def save_histograms(df, output_folder='results/plots/histograms'):
+    '''Generates and saves histograms for each numerical column in the DataFrame.'''
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    numerical_columns = df.select_dtypes(include=['number']).columns
+
+    for col in numerical_columns:
+
+        sns.histplot(data=df, x=col, hue='Gender', palette='rocket', multiple='dodge')     
+
+        plt.title(f'Histogram of {col}', fontsize=14)
+        plt.xlabel(col, fontsize=10)
+        plt.ylabel("Count", fontsize=10)
+
+        plt.xticks(rotation=45)
+
+        plt.savefig(f'{output_folder}/{col}_histogram.png')
+        plt.close()
+
+    print(f"All histogram plots with error bars have been saved to the '{output_folder}' folder.")
