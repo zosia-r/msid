@@ -2,3 +2,5 @@
 *.yml
 
 dataset.csv
+
+__pycache__
