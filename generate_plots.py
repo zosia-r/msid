@@ -16,13 +16,16 @@ def save_boxplots_numerical_by_categorial(df, output_folder='results/plots/boxpl
     for num_col in numerical_columns:
         for cat_col in categorical_columns:
             sns.boxplot(x=cat_col, y=num_col, data=df, palette='rocket', hue='Gender')
+
             plt.title(f'Boxplot of {num_col} by {cat_col}', fontsize=14)
             plt.xlabel(cat_col, fontsize=10)
             plt.ylabel(num_col, fontsize=10)
+
             plt.xticks(rotation=45, fontsize=6)
             plt.yticks(rotation=45, fontsize=6)
-            plot_filename = f'{output_folder}/{num_col}_by_{cat_col}_boxplot.png'
-            plt.savefig(plot_filename)
+            plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+            
+            plt.savefig(f'{output_folder}/{num_col}_by_{cat_col}_boxplot.png')
             plt.close()
     
     print(f"All boxplots have been saved to the '{output_folder}' folder.")
@@ -42,13 +45,16 @@ def save_boxplots_categorial_by_categorial(df, output_folder='results/plots/boxp
         for cat_col2 in categorical_columns:
             if cat_col1 != cat_col2:
                 sns.boxplot(x=cat_col1, y=cat_col2, data=df, palette='rocket', hue='Gender')
+
                 plt.title(f'Boxplot of {cat_col2} by {cat_col1}', fontsize=14)
                 plt.xlabel(cat_col1, fontsize=10)
                 plt.ylabel(cat_col2, fontsize=10)
+
                 plt.xticks(rotation=45, fontsize=6)
                 plt.yticks(rotation=45, fontsize=6)
-                plot_filename = f'{output_folder}/{cat_col2}_by_{cat_col1}_boxplot.png'
-                plt.savefig(plot_filename)
+                plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+
+                plt.savefig(f'{output_folder}/{cat_col2}_by_{cat_col1}_boxplot.png')
                 plt.close()
     
     print(f"All boxplots have been saved to the '{output_folder}' folder.")
@@ -68,13 +74,17 @@ def save_violinplots_numerical_by_categorial(df, output_folder='results/plots/vi
     for num_col in numerical_columns:
         for cat_col in categorical_columns:
             sns.violinplot(x=cat_col, y=num_col, data=df, palette='rocket', hue='Gender')
+
             plt.title(f'Violin Plot of {num_col} by {cat_col}', fontsize=14)
             plt.xlabel(cat_col, fontsize=10)
             plt.ylabel(num_col, fontsize=10)
+
             plt.xticks(rotation=45, fontsize=6)
             plt.yticks(rotation=45, fontsize=6)
-            plot_filename = f'{output_folder}/{num_col}_by_{cat_col}_violinplot.png'
-            plt.savefig(plot_filename)
+            plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+
+
+            plt.savefig(f'{output_folder}/{num_col}_by_{cat_col}_violinplot.png')
             plt.close()
     
     print(f"All violin plots have been saved to the '{output_folder}' folder.")
@@ -93,13 +103,16 @@ def save_violinplots_categorial_by_categorial(df, output_folder='results/plots/v
         for cat_col2 in categorical_columns:
             if cat_col1 != cat_col2:
                 sns.violinplot(x=cat_col1, y=cat_col2, data=df, palette='rocket', hue='Gender')
+                
                 plt.title(f'Violin Plot of {cat_col2} by {cat_col1}', fontsize=14)
                 plt.xlabel(cat_col1, fontsize=10)
                 plt.ylabel(cat_col2, fontsize=10)
+               
                 plt.xticks(rotation=45, fontsize=6)
                 plt.yticks(rotation=45, fontsize=6)
-                plot_filename = f'{output_folder}/{cat_col2}_by_{cat_col1}_violinplot.png'
-                plt.savefig(plot_filename)
+                plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+
+                plt.savefig(f'{output_folder}/{cat_col2}_by_{cat_col1}_violinplot.png')
                 plt.close()
     
     print(f"All violin plots have been saved to the '{output_folder}' folder.")
@@ -107,14 +120,12 @@ def save_violinplots_categorial_by_categorial(df, output_folder='results/plots/v
 
 
 def save_histograms(df, output_folder='results/plots/histograms'):
-    '''Generates and saves histograms for each numerical column in the DataFrame.'''
+    '''Generates and saves histograms for each ncolumn in the DataFrame.'''
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    numerical_columns = df.select_dtypes(include=['number']).columns
-
-    for col in numerical_columns:
+    for col in df.columns:
 
         sns.histplot(data=df, x=col, hue='Gender', palette='rocket', multiple='dodge')     
 
@@ -122,26 +133,26 @@ def save_histograms(df, output_folder='results/plots/histograms'):
         plt.xlabel(col, fontsize=10)
         plt.ylabel("Count", fontsize=10)
 
-        plt.xticks(rotation=45)
+        plt.xticks(rotation=45, size=6)
+        plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+
 
         plt.savefig(f'{output_folder}/{col}_histogram.png')
         plt.close()
 
-    print(f"All histogram plots with error bars have been saved to the '{output_folder}' folder.")
+    print(f"All histogram plots have been saved to the '{output_folder}' folder.")
 
 
 
-def save_heatmap_of_correlation_matrix(df, output_folder='results/plots/heatmaps'):
+def save_heatmap(df, output_folder='results/plots/heatmaps/numerical'):
     '''Generates and saves a heatmap of the correlation matrix for the DataFrame.'''
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    numerical_data = df.select_dtypes(include=['number'])
 
-    corr = numerical_data.corr()
+    corr = df.corr()
 
-    # Create a mask to display only the lower triangle of the heatmap
     mask = np.triu(np.ones_like(corr, dtype=bool))
 
     sns.heatmap(corr, mask=mask, cmap='coolwarm', annot=True, fmt=".2f", cbar_kws={"shrink": .8})
@@ -156,4 +167,31 @@ def save_heatmap_of_correlation_matrix(df, output_folder='results/plots/heatmaps
     plt.show()
     plt.close()
 
-    print(f"Correlation heatmap has been saved to the '{output_folder}' folder.")
+    print(f'Heatmap saved to the {output_folder} folder.')
+
+
+
+def save_regression_plots(df, output_folder='results/plots/regression'):
+    '''Creates and saves linear regression plots for every pair of numerical features.'''
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    num_cols = df.select_dtypes(include=['number']).columns
+
+    for col1 in num_cols:
+        for col2 in num_cols:
+            sns.lmplot(data=df, x=col1, y=col2, aspect=1.2, height=5, scatter_kws={'s': 30}, line_kws={"color": "pink"})
+
+            plt.title(f'Linear Regression: {col1} vs {col2}', fontsize=14)
+            plt.xlabel(col1, fontsize=12)
+            plt.ylabel(col2, fontsize=12)
+
+            plt.xticks(rotation=45)
+            plt.grid(True)
+            plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+
+            plt.savefig(f'{output_folder}/{col1}_vs_{col2}_linear_regression.png')
+            plt.close()
+
+    print(f"Regression plots saved in '{output_folder}'.")
