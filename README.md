@@ -1,8 +1,7 @@
 
 # Estimation of Obesity Levels Based On Eating Habits and Physical Condition
 
-[Dataset description]
-(https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition)
+[Dataset description](https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition)
 
 
 ## Requirements -> `environment.yml`
