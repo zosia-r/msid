@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def read_data(input_file):
     '''Reads the csv input file and returns a pandas dataframe'''
@@ -14,7 +15,10 @@ def read_data(input_file):
 
 def save_data(results_df, output_file):
     '''Saves given dataframe to a csv file'''
-
+    
+    if not os.path.exists(output_file):
+        os.makedirs(output_file)
+    
     try:
         results_df.to_csv(output_file, index=False)
     except Exception as e:
