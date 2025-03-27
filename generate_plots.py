@@ -1,5 +1,6 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
 def save_boxplots_numerical_by_categorial(df, output_folder='results/plots/boxplots'):
@@ -127,3 +128,32 @@ def save_histograms(df, output_folder='results/plots/histograms'):
         plt.close()
 
     print(f"All histogram plots with error bars have been saved to the '{output_folder}' folder.")
+
+
+
+def save_heatmap_of_correlation_matrix(df, output_folder='results/plots/heatmaps'):
+    '''Generates and saves a heatmap of the correlation matrix for the DataFrame.'''
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    numerical_data = df.select_dtypes(include=['number'])
+
+    corr = numerical_data.corr()
+
+    # Create a mask to display only the lower triangle of the heatmap
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+
+    sns.heatmap(corr, mask=mask, cmap='coolwarm', annot=True, fmt=".2f", cbar_kws={"shrink": .8})
+
+    plt.title('Heatmap of Correlation Matrix', fontsize=16)
+
+    plt.xticks(rotation=45, size=6)
+    plt.yticks(size=6)
+    plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
+    
+    plt.savefig(f'{output_folder}/correlation_heatmap.png')
+    plt.show()
+    plt.close()
+
+    print(f"Correlation heatmap has been saved to the '{output_folder}' folder.")
