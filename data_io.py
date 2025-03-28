@@ -13,13 +13,14 @@ def read_data(input_file):
 
 
 
-def save_data(results_df, output_file):
+def save_data(df, output_file):
     '''Saves given dataframe to a csv file'''
     
     try:
-        results_df.to_csv(output_file, index=False)
+        df.to_csv(output_file, index=False)
     except Exception as e:
         print(f"Error writing file {output_file}/n{e}")
         exit(1)
 
     print(f"Dataframe saved to file {output_file}")
+

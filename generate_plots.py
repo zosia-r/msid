@@ -1,6 +1,10 @@
+import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 import os
 
 def save_boxplots_numerical_by_categorial(df, output_folder='results/plots/boxplots'):
@@ -15,7 +19,7 @@ def save_boxplots_numerical_by_categorial(df, output_folder='results/plots/boxpl
     
     for num_col in numerical_columns:
         for cat_col in categorical_columns:
-            sns.boxplot(x=cat_col, y=num_col, data=df, palette='rocket', hue='Gender')
+            sns.boxplot(x=cat_col, y=num_col, data=df, palette='rocket')
 
             plt.title(f'Boxplot of {num_col} by {cat_col}', fontsize=14)
             plt.xlabel(cat_col, fontsize=10)
@@ -44,7 +48,7 @@ def save_boxplots_categorial_by_categorial(df, output_folder='results/plots/boxp
     for cat_col1 in categorical_columns:
         for cat_col2 in categorical_columns:
             if cat_col1 != cat_col2:
-                sns.boxplot(x=cat_col1, y=cat_col2, data=df, palette='rocket', hue='Gender')
+                sns.boxplot(x=cat_col1, y=cat_col2, data=df, palette='rocket')
 
                 plt.title(f'Boxplot of {cat_col2} by {cat_col1}', fontsize=14)
                 plt.xlabel(cat_col1, fontsize=10)
@@ -73,7 +77,7 @@ def save_violinplots_numerical_by_categorial(df, output_folder='results/plots/vi
     
     for num_col in numerical_columns:
         for cat_col in categorical_columns:
-            sns.violinplot(x=cat_col, y=num_col, data=df, palette='rocket', hue='Gender')
+            sns.violinplot(x=cat_col, y=num_col, data=df, palette='rocket')
 
             plt.title(f'Violin Plot of {num_col} by {cat_col}', fontsize=14)
             plt.xlabel(cat_col, fontsize=10)
@@ -102,7 +106,7 @@ def save_violinplots_categorial_by_categorial(df, output_folder='results/plots/v
     for cat_col1 in categorical_columns:
         for cat_col2 in categorical_columns:
             if cat_col1 != cat_col2:
-                sns.violinplot(x=cat_col1, y=cat_col2, data=df, palette='rocket', hue='Gender')
+                sns.violinplot(x=cat_col1, y=cat_col2, data=df, palette='rocket')
                 
                 plt.title(f'Violin Plot of {cat_col2} by {cat_col1}', fontsize=14)
                 plt.xlabel(cat_col1, fontsize=10)
@@ -150,8 +154,9 @@ def save_heatmap(df, output_folder='results/plots/heatmaps/numerical'):
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
+    numerical_data = df.select_dtypes(include=['float64', 'int64'])
 
-    corr = df.corr()
+    corr = numerical_data.corr()
 
     mask = np.triu(np.ones_like(corr, dtype=bool))
 
@@ -164,7 +169,6 @@ def save_heatmap(df, output_folder='results/plots/heatmaps/numerical'):
     plt.subplots_adjust(left=0.2, right=0.9, top=0.9, bottom=0.2)
     
     plt.savefig(f'{output_folder}/correlation_heatmap.png')
-    plt.show()
     plt.close()
 
     print(f'Heatmap saved to the {output_folder} folder.')
@@ -195,3 +199,65 @@ def save_regression_plots(df, output_folder='results/plots/regression'):
             plt.close()
 
     print(f"Regression plots saved in '{output_folder}'.")
+
+
+
+def save_dimension_reduction_plots(df, output_folder='results/plots/dimension_reduction'):
+    '''Creates and saves variance plots for PCA and t-SNE dimensionality reduction.'''
+
+    os.makedirs(output_folder, exist_ok=True)
+
+    if df.empty:
+        print("DataFrame is empty. No plots will be generated.")
+        return
+
+    num_columns = df.select_dtypes(include=['number']).columns
+    cat_columns = df.select_dtypes(include=['object']).columns
+
+    if len(cat_columns) > 0:
+        one_hot = OneHotEncoder(sparse_output=False)
+        one_hot_data = one_hot.fit_transform(df[cat_columns])
+        one_hot_df = pd.DataFrame(one_hot_data, columns=one_hot.get_feature_names_out(cat_columns))
+        df = df.drop(cat_columns, axis=1, errors='ignore')
+
+    if df.shape[1] == 0:
+        print("No numerical columns found after encoding. No plots will be generated.")
+        return
+
+    if df.shape[1] > 1:
+        scaler = StandardScaler()
+        df_scaled = scaler.fit_transform(df)
+    else:
+        df_scaled = df.to_numpy()
+
+    n_components = min(5, df.shape[1])
+    pca = PCA(n_components=n_components)
+    pca_data = pca.fit_transform(df_scaled)
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=[f'PC{i+1}' for i in range(n_components)],
+                y=pca.explained_variance_ratio_,
+                palette='viridis')
+    plt.title('PCA Explained Variance Ratio', fontsize=16)
+    plt.xlabel('Principal Components', fontsize=12)
+    plt.ylabel('Explained Variance Ratio', fontsize=12)
+    plt.grid(True)
+    plt.savefig(f'{output_folder}/pca_variance_ratio.png')
+    plt.close()
+
+    if df.shape[1] > 1:
+        tsne = TSNE(perplexity=min(30, df.shape[0] - 1), n_iter=1000, random_state=42)
+        tsne_data = tsne.fit_transform(df_scaled)
+        
+        tsne_df = pd.DataFrame(tsne_data, columns=['TSNE1', 'TSNE2'])
+
+        plt.figure(figsize=(10, 6))
+        plt.scatter(tsne_df['TSNE1'], tsne_df['TSNE2'], alpha=0.5, edgecolors='k')
+        plt.title('t-SNE Visualization', fontsize=16)
+        plt.xlabel('t-SNE Component 1', fontsize=12)
+        plt.ylabel('t-SNE Component 2', fontsize=12)
+        plt.grid(True)
+        plt.savefig(f'{output_folder}/tsne_visualization.png')
+        plt.close()
+    else:
+        print("t-SNE requires at least 2 numerical columns. Skipping t-SNE plot.")
