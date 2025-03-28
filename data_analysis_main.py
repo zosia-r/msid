@@ -2,6 +2,8 @@ from basic_statistics import get_basic_statistics_df
 from data_io import read_data, save_data
 from rename_columns import rename_columns_based_on_dict
 import generate_plots as gp
+import warnings
+
 
 
 input_file = 'dataset.csv'
@@ -31,6 +33,9 @@ feature_label_dictionary = {
 
 
 if __name__ == '__main__':
+    
+    warnings.simplefilter("ignore", category=FutureWarning)
+
     # 3.0
     df = read_data(input_file)
     df = rename_columns_based_on_dict(df, feature_label_dictionary)
