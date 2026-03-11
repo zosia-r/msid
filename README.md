@@ -1,4 +1,4 @@
-# EDA & Evaluation and Optimization of Machine Learning Models
+# Obesity Trends: EDA & ML
 
 This repository contains a multi-stage academic project focused on **building, evaluating, and optimizing machine learning models** from high-level libraries to low-level implementations. The project explores how model performance changes depending on the **implementation approach, regularization techniques and hyperparameter settings**. The work is divided into three parts, each implemented in separate folders with **Python code and Jupyter notebooks**. A full analysis and discussion of the results is provided in the accompanying report.
 
